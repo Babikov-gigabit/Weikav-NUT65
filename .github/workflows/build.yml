@@ -21,10 +21,17 @@ jobs:
         with:
           name: NUT65-Control
           path: dist/NUT65-Control.exe
+      - name: Read version
+        id: ver
+        shell: bash
+        run: echo "tag=v$(tr -d '[:space:]' < VERSION)" >> "$GITHUB_OUTPUT"
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: NUT65 Control ${{ steps.ver.outputs.tag }}
+          target_commitish: ${{ github.sha }}
           files: dist/NUT65-Control.exe
           body: |
             NUT65 Control — локальная утилита для Weikav NUT65: подсветка, макросы, назначение клавиш.
