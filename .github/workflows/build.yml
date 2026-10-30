@@ -1,5 +1,11 @@
 name: build
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   windows-exe:
     runs-on: windows-latest
@@ -15,3 +21,12 @@ jobs:
         with:
           name: NUT65-Control
           path: dist/NUT65-Control.exe
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/NUT65-Control.exe
+          body: |
+            NUT65 Control — локальная утилита для Weikav NUT65: подсветка, макросы, назначение клавиш.
+            Скачайте `NUT65-Control.exe`, подключите клавиатуру кабелем USB и запустите. Python не нужен.
+            Если Windows SmartScreen предупреждает: «Подробнее» → «Выполнить в любом случае».
